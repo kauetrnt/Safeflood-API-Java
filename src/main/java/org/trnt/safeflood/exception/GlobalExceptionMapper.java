@@ -6,9 +6,9 @@ import jakarta.ws.rs.ext.Provider;
 import org.jboss.logging.Logger;
 
 @Provider
-public class ExceptionMapper implements ExceptionMapper<Exception> {
+public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
 
-    private static final Logger LOG = Logger.getLogger(ExceptionMapper.class);
+    private static final Logger LOG = Logger.getLogger(GlobalExceptionMapper.class);
 
     @Override
     public Response toResponse(Exception exception) {
