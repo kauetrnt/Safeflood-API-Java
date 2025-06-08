@@ -2,8 +2,8 @@ package org.trnt.safeflood.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
+import org.trnt.safeflood.exception.ResourceNotFoundException;
+import org.trnt.safeflood.exception.BusinessException;
 import org.trnt.safeflood.model.UsuarioNotificacao;
 import org.trnt.safeflood.model.UsuarioNotificacaoId;
 import java.util.List;
@@ -16,7 +16,11 @@ public class UsuarioNotificacaoService {
     }
 
     public UsuarioNotificacao findById(UsuarioNotificacaoId id) {
-        return UsuarioNotificacao.findById(id);
+        UsuarioNotificacao usuarioNotificacao = UsuarioNotificacao.findById(id);
+        if (usuarioNotificacao == null) {
+            throw new ResourceNotFoundException("Relação Usuário-Notificação não encontrada");
+        }
+        return usuarioNotificacao;
     }
 
     public List<UsuarioNotificacao> findByUsuario(Long usuarioId) {
@@ -29,6 +33,22 @@ public class UsuarioNotificacaoService {
 
     @Transactional
     public UsuarioNotificacao create(UsuarioNotificacao usuarioNotificacao) {
+        if (usuarioNotificacao.usuario == null) {
+            throw new BusinessException("Usuário é obrigatório para criar uma relação de notificação");
+        }
+        if (usuarioNotificacao.notificacao == null) {
+            throw new BusinessException("Notificação é obrigatória para criar uma relação de notificação");
+        }
+        
+        // Verifica se já existe uma relação entre o usuário e a notificação
+        UsuarioNotificacaoId id = new UsuarioNotificacaoId();
+        id.idUsuario = usuarioNotificacao.usuario.id;
+        id.idNotificacao = usuarioNotificacao.notificacao.id;
+        
+        if (UsuarioNotificacao.findById(id) != null) {
+            throw new BusinessException("Relação entre usuário e notificação já existe");
+        }
+        
         usuarioNotificacao.persist();
         return usuarioNotificacao;
     }
@@ -37,7 +57,7 @@ public class UsuarioNotificacaoService {
     public void delete(UsuarioNotificacaoId id) {
         UsuarioNotificacao entity = UsuarioNotificacao.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Relação Usuário-Notificação não encontrada.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Relação Usuário-Notificação não encontrada");
         }
         entity.delete();
     }

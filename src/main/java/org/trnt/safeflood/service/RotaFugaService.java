@@ -2,8 +2,8 @@ package org.trnt.safeflood.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
+import org.trnt.safeflood.exception.ResourceNotFoundException;
+import org.trnt.safeflood.exception.BusinessException;
 import org.trnt.safeflood.model.RotaFuga;
 import java.util.List;
 
@@ -15,7 +15,11 @@ public class RotaFugaService {
     }
 
     public RotaFuga findById(Long id) {
-        return RotaFuga.findById(id);
+        RotaFuga rotaFuga = RotaFuga.findById(id);
+        if (rotaFuga == null) {
+            throw new ResourceNotFoundException("Rota de fuga com id " + id + " não encontrada");
+        }
+        return rotaFuga;
     }
 
     public List<RotaFuga> findByAreaRisco(Long areaRiscoId) {
@@ -24,6 +28,15 @@ public class RotaFugaService {
 
     @Transactional
     public RotaFuga create(RotaFuga rotaFuga) {
+        if (rotaFuga.areaRisco == null) {
+            throw new BusinessException("Área de risco é obrigatória para criar uma rota de fuga");
+        }
+        if (rotaFuga.origem == null || rotaFuga.origem.trim().isEmpty()) {
+            throw new BusinessException("Origem é obrigatória para criar uma rota de fuga");
+        }
+        if (rotaFuga.destino == null || rotaFuga.destino.trim().isEmpty()) {
+            throw new BusinessException("Destino é obrigatório para criar uma rota de fuga");
+        }
         rotaFuga.persist();
         return rotaFuga;
     }
@@ -32,7 +45,17 @@ public class RotaFugaService {
     public RotaFuga update(Long id, RotaFuga rotaFuga) {
         RotaFuga entity = RotaFuga.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Rota de fuga com id " + id + " não encontrada.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Rota de fuga com id " + id + " não encontrada");
+        }
+        
+        if (rotaFuga.areaRisco == null) {
+            throw new BusinessException("Área de risco é obrigatória para atualizar uma rota de fuga");
+        }
+        if (rotaFuga.origem == null || rotaFuga.origem.trim().isEmpty()) {
+            throw new BusinessException("Origem é obrigatória para atualizar uma rota de fuga");
+        }
+        if (rotaFuga.destino == null || rotaFuga.destino.trim().isEmpty()) {
+            throw new BusinessException("Destino é obrigatório para atualizar uma rota de fuga");
         }
         
         entity.origem = rotaFuga.origem;
@@ -46,7 +69,7 @@ public class RotaFugaService {
     public void delete(Long id) {
         RotaFuga entity = RotaFuga.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Rota de fuga com id " + id + " não encontrada.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Rota de fuga com id " + id + " não encontrada");
         }
         entity.delete();
     }

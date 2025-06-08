@@ -2,8 +2,7 @@ package org.trnt.safeflood.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
+import org.trnt.safeflood.exception.ResourceNotFoundException;
 import org.trnt.safeflood.model.Alerta;
 import java.util.List;
 
@@ -15,7 +14,11 @@ public class AlertaService {
     }
 
     public Alerta findById(Long id) {
-        return Alerta.findById(id);
+        Alerta alerta = Alerta.findById(id);
+        if (alerta == null) {
+            throw new ResourceNotFoundException("Alerta com id " + id + " não encontrado");
+        }
+        return alerta;
     }
 
     public List<Alerta> findByUsuario(Long usuarioId) {
@@ -24,6 +27,9 @@ public class AlertaService {
 
     @Transactional
     public Alerta create(Alerta alerta) {
+        if (alerta.usuario == null) {
+            throw new BusinessException("Usuário é obrigatório para criar um alerta");
+        }
         alerta.persist();
         return alerta;
     }
@@ -32,7 +38,11 @@ public class AlertaService {
     public Alerta update(Long id, Alerta alerta) {
         Alerta entity = Alerta.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Alerta com id " + id + " não encontrado.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Alerta com id " + id + " não encontrado");
+        }
+        
+        if (alerta.usuario == null) {
+            throw new BusinessException("Usuário é obrigatório para atualizar um alerta");
         }
         
         entity.titulo = alerta.titulo;
@@ -53,7 +63,7 @@ public class AlertaService {
     public void delete(Long id) {
         Alerta entity = Alerta.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Alerta com id " + id + " não encontrado.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Alerta com id " + id + " não encontrado");
         }
         entity.delete();
     }

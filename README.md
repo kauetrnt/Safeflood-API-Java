@@ -1,79 +1,133 @@
-# safeflood
+# SafeFlood API
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+API REST para o sistema SafeFlood, uma plataforma de monitoramento e alerta de enchentes.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Tecnologias Utilizadas
 
-## Running the application in dev mode
+- Java 21
+- Quarkus Framework
+- Hibernate ORM com Panache
+- Oracle Database
+- Docker
+- Maven
 
-You can run your application in dev mode that enables live coding using:
+## Estrutura do Projeto
 
-```shell script
+O projeto segue uma arquitetura em camadas:
+
+- **Resource**: Endpoints REST da API
+- **Service**: Lógica de negócio
+- **Model**: Entidades JPA
+- **Config**: Configurações da aplicação
+
+## Endpoints da API
+
+### Usuários (`/usuarios`)
+- `GET /usuarios`: Lista todos os usuários
+- `GET /usuarios/{id}`: Busca usuário por ID
+- `GET /usuarios/cpf/{cpf}`: Busca usuário por CPF
+- `GET /usuarios/email/{email}`: Busca usuário por email
+- `POST /usuarios`: Cria novo usuário
+- `PUT /usuarios/{id}`: Atualiza usuário
+- `DELETE /usuarios/{id}`: Remove usuário
+
+### Alertas (`/alertas`)
+- `GET /alertas`: Lista todos os alertas
+- `GET /alertas/{id}`: Busca alerta por ID
+- `GET /alertas/usuario/{usuarioId}`: Lista alertas por usuário
+- `POST /alertas`: Cria novo alerta
+- `PUT /alertas/{id}`: Atualiza alerta
+- `DELETE /alertas/{id}`: Remove alerta
+
+### Áreas de Risco (`/areas-risco`)
+- `GET /areas-risco`: Lista todas as áreas de risco
+- `GET /areas-risco/{id}`: Busca área por ID
+- `POST /areas-risco`: Cria nova área de risco
+- `PUT /areas-risco/{id}`: Atualiza área de risco
+- `DELETE /areas-risco/{id}`: Remove área de risco
+
+### Rotas de Fuga (`/rotas-fuga`)
+- `GET /rotas-fuga`: Lista todas as rotas
+- `GET /rotas-fuga/{id}`: Busca rota por ID
+- `GET /rotas-fuga/area-risco/{areaRiscoId}`: Lista rotas por área de risco
+- `POST /rotas-fuga`: Cria nova rota
+- `PUT /rotas-fuga/{id}`: Atualiza rota
+- `DELETE /rotas-fuga/{id}`: Remove rota
+
+### Eventos (`/eventos`)
+- `GET /eventos`: Lista todos os eventos
+- `GET /eventos/{id}`: Busca evento por ID
+- `POST /eventos`: Cria novo evento
+- `PUT /eventos/{id}`: Atualiza evento
+- `DELETE /eventos/{id}`: Remove evento
+
+### Notificações (`/notificacoes`)
+- `GET /notificacoes`: Lista todas as notificações
+- `GET /notificacoes/{id}`: Busca notificação por ID
+- `GET /notificacoes/tipo/{tipo}`: Lista notificações por tipo
+- `POST /notificacoes`: Cria nova notificação
+- `PUT /notificacoes/{id}`: Atualiza notificação
+- `DELETE /notificacoes/{id}`: Remove notificação
+
+## Configuração do Ambiente
+
+### Pré-requisitos
+- Java 21
+- Maven
+- Docker (opcional)
+- Oracle Database
+
+### Variáveis de Ambiente
+```properties
+# Database Configuration
+QUARKUS_DATASOURCE_JDBC_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl
+QUARKUS_DATASOURCE_USERNAME=seu_usuario
+QUARKUS_DATASOURCE_PASSWORD=sua_senha
+
+# HTTP Configuration
+QUARKUS_HTTP_PORT=8080
+```
+
+## Executando a Aplicação
+
+### Modo Desenvolvimento
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
+### Build e Execução
+```bash
 ./mvnw package
+java -jar target/quarkus-app/quarkus-run.jar
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+### Docker
+```bash
+docker build -t safeflood-api .
+docker run -p 8080:8080 safeflood-api
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Deploy
 
-## Creating a native executable
+O projeto está configurado para deploy no Render. O arquivo `render.yaml` contém as configurações necessárias.
 
-You can create a native executable using:
+### Variáveis de Ambiente no Render
+- `QUARKUS_DATASOURCE_JDBC_URL`
+- `QUARKUS_DATASOURCE_USERNAME`
+- `QUARKUS_DATASOURCE_PASSWORD`
 
-```shell script
-./mvnw package -Dnative
+## CORS
+
+A API está configurada para aceitar requisições do frontend em `http://localhost:3000`. Para produção, atualize a configuração CORS no `application.properties`:
+
+```properties
+quarkus.http.cors.origins=https://seu-frontend.com
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+## Contribuição
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/safeflood-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplify your persistence code for Hibernate ORM via the active record or the repository pattern
-- JDBC Driver - Oracle ([guide](https://quarkus.io/guides/datasource)): Connect to the Oracle database via JDBC
-- Micrometer metrics ([guide](https://quarkus.io/guides/micrometer)): Instrument the runtime and your application with dimensional metrics using Micrometer.
-
-## Provided Code
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
-
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+1. Faça o fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request

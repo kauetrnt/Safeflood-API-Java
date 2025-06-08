@@ -2,8 +2,8 @@ package org.trnt.safeflood.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
+import org.trnt.safeflood.exception.ResourceNotFoundException;
+import org.trnt.safeflood.exception.BusinessException;
 import org.trnt.safeflood.model.Evento;
 import java.util.List;
 
@@ -15,11 +15,18 @@ public class EventoService {
     }
 
     public Evento findById(Long id) {
-        return Evento.findById(id);
+        Evento evento = Evento.findById(id);
+        if (evento == null) {
+            throw new ResourceNotFoundException("Evento com id " + id + " não encontrado");
+        }
+        return evento;
     }
 
     @Transactional
     public Evento create(Evento evento) {
+        if (evento.acaoTomada == null || evento.acaoTomada.trim().isEmpty()) {
+            throw new BusinessException("Ação tomada é obrigatória");
+        }
         evento.persist();
         return evento;
     }
@@ -28,7 +35,11 @@ public class EventoService {
     public Evento update(Long id, Evento evento) {
         Evento entity = Evento.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Evento com id " + id + " não encontrado.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Evento com id " + id + " não encontrado");
+        }
+        
+        if (evento.acaoTomada == null || evento.acaoTomada.trim().isEmpty()) {
+            throw new BusinessException("Ação tomada é obrigatória");
         }
         
         entity.acaoTomada = evento.acaoTomada;
@@ -40,7 +51,7 @@ public class EventoService {
     public void delete(Long id) {
         Evento entity = Evento.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Evento com id " + id + " não encontrado.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Evento com id " + id + " não encontrado");
         }
         entity.delete();
     }

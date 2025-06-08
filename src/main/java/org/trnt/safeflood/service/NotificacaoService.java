@@ -2,8 +2,7 @@ package org.trnt.safeflood.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
+import org.trnt.safeflood.exception.ResourceNotFoundException;
 import org.trnt.safeflood.model.Notificacao;
 import java.util.List;
 
@@ -15,7 +14,11 @@ public class NotificacaoService {
     }
 
     public Notificacao findById(Long id) {
-        return Notificacao.findById(id);
+        Notificacao notificacao = Notificacao.findById(id);
+        if (notificacao == null) {
+            throw new ResourceNotFoundException("Notificação com id " + id + " não encontrada");
+        }
+        return notificacao;
     }
 
     public List<Notificacao> findByTipo(String tipo) {
@@ -24,6 +27,12 @@ public class NotificacaoService {
 
     @Transactional
     public Notificacao create(Notificacao notificacao) {
+        if (notificacao.tipoNotificacao == null || notificacao.tipoNotificacao.trim().isEmpty()) {
+            throw new BusinessException("Tipo de notificação é obrigatório");
+        }
+        if (notificacao.mensagemNotificacao == null || notificacao.mensagemNotificacao.trim().isEmpty()) {
+            throw new BusinessException("Mensagem da notificação é obrigatória");
+        }
         notificacao.persist();
         return notificacao;
     }
@@ -32,7 +41,14 @@ public class NotificacaoService {
     public Notificacao update(Long id, Notificacao notificacao) {
         Notificacao entity = Notificacao.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Notificação com id " + id + " não encontrada.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Notificação com id " + id + " não encontrada");
+        }
+        
+        if (notificacao.tipoNotificacao == null || notificacao.tipoNotificacao.trim().isEmpty()) {
+            throw new BusinessException("Tipo de notificação é obrigatório");
+        }
+        if (notificacao.mensagemNotificacao == null || notificacao.mensagemNotificacao.trim().isEmpty()) {
+            throw new BusinessException("Mensagem da notificação é obrigatória");
         }
         
         entity.mensagemNotificacao = notificacao.mensagemNotificacao;
@@ -46,7 +62,7 @@ public class NotificacaoService {
     public void delete(Long id) {
         Notificacao entity = Notificacao.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Notificação com id " + id + " não encontrada.", Response.Status.NOT_FOUND);
+            throw new ResourceNotFoundException("Notificação com id " + id + " não encontrada");
         }
         entity.delete();
     }
