@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: safeflood-api
+    env: docker
+    region: oregon
+    plan: free
+    healthCheckPath: /q/health
+    envVars:
+      - key: QUARKUS_HTTP_PORT
+        value: 8080
+      - key: QUARKUS_HTTP_CORS
+        value: "true"
+      - key: QUARKUS_HTTP_CORS_ORIGINS
+        value: "http://localhost:3000"
+      - key: QUARKUS_HTTP_CORS_METHODS
+        value: "GET,POST,PUT,DELETE,OPTIONS"
+      - key: QUARKUS_HTTP_CORS_HEADERS
+        value: "accept,authorization,content-type,x-requested-with"
+      - key: QUARKUS_HTTP_CORS_EXPOSED_HEADERS
+        value: "Content-Disposition"
+      - key: QUARKUS_HTTP_CORS_ACCESS_CONTROL_MAX_AGE
+        value: "24H"
+      - key: QUARKUS_HTTP_CORS_ACCESS_CONTROL_ALLOW_CREDENTIALS
+        value: "true" 
