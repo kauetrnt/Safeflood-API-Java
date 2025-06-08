@@ -2,6 +2,7 @@ package org.trnt.safeflood.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.trnt.safeflood.exception.BusinessException;
 import org.trnt.safeflood.exception.ResourceNotFoundException;
 import org.trnt.safeflood.model.Notificacao;
 import java.util.List;
