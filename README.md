@@ -18,7 +18,7 @@ O projeto segue uma arquitetura em camadas:
 - **Resource**: Endpoints REST da API
 - **Service**: Lógica de negócio
 - **Model**: Entidades JPA
-- **Config**: Configurações da aplicação
+- **Exception**: Tratamento de Exceções da API
 
 ## Endpoints da API
 
