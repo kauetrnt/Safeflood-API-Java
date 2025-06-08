@@ -21,11 +21,7 @@ public class Usuario extends PanacheEntity {
     
     @Column(name = "tipo_usuario", nullable = false, length = 50)
     public String tipoUsuario;
-    
-    
-    @OneToMany(mappedBy = "usuario")
-    public List<Alerta> alertas;
-    
+
     @ManyToMany
     @JoinTable(
         name = "usu_not",

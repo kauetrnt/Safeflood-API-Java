@@ -36,6 +36,12 @@ public class UsuarioService {
 
     @Transactional
     public Usuario create(Usuario usuario) {
+        if (usuario.nomeUsuario == null || usuario.nomeUsuario.trim().isEmpty()) {
+            throw new BusinessException("Nome do usuário é obrigatório.");
+        }
+        if (usuario.tipoUsuario == null || usuario.tipoUsuario.trim().isEmpty()) {
+            throw new BusinessException("Tipo do usuário é obrigatório.");
+        }
         if (usuario.email != null && findByEmail(usuario.email) != null) {
             throw new BusinessException("Email já cadastrado");
         }
