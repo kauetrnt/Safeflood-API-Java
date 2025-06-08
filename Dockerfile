@@ -1,11 +1,11 @@
 # Stage 1: Build the application
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /code
-COPY mvnw /code/mvnw
-COPY .mvn /code/.mvn
-COPY pom.xml /code/
+COPY ./mvnw /code/mvnw
+COPY ./.mvn /code/.mvn
+COPY ./pom.xml /code/
 RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
-COPY src /code/src
+COPY ./src /code/src
 RUN ./mvnw package -DskipTests
 
 # Stage 2: Create the runtime image
