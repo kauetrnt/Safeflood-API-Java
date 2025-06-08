@@ -2,9 +2,12 @@ services:
   - type: web
     name: safeflood-api
     env: docker
-    region: oregon
     plan: free
-    healthCheckPath: /q/health
+    startCommand: java -jar /deployments/quarkus-run.jar
     envVars:
-      - key: JAVA_OPTS_APPEND
-        value: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager" 
+      - key: QUARKUS_DATASOURCE_JDBC_URL
+        sync: false
+      - key: QUARKUS_DATASOURCE_USERNAME
+        sync: false
+      - key: QUARKUS_DATASOURCE_PASSWORD
+        sync: false 
