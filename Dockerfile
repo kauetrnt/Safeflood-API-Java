@@ -3,8 +3,7 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 COPY . .
-RUN chmod +x mvnw
-RUN ./mvnw package -Dquarkus.package.type=fast-jar
+RUN mvn clean package -Dquarkus.package.type=fast-jar -DskipTests
 
 # Stage 2: Create the runtime image
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
