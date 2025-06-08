@@ -2,8 +2,7 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
+COPY . .
 RUN mvn package -Dquarkus.package.type=fast-jar
 
 # Stage 2: Create the runtime image
