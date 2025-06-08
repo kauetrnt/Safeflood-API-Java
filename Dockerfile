@@ -1,12 +1,12 @@
 # Stage 1: Build the application
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 COPY . .
 RUN mvn clean package -Dquarkus.package.type=fast-jar -DskipTests
 
 # Stage 2: Create the runtime image
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
+FROM registry.access.redhat.com/ubi9/openjdk-21:1.21
 
 ENV LANGUAGE='en_US:en'
 
