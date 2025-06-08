@@ -31,11 +31,7 @@ public class UsuarioService {
     }
 
     public Usuario findByEmail(String email) {
-        Usuario usuario = Usuario.find("email", email).firstResult();
-        if (usuario == null) {
-            throw new ResourceNotFoundException("Usuário com email " + email + " não encontrado");
-        }
-        return usuario;
+        return Usuario.find("email", email).firstResult();
     }
 
     @Transactional
