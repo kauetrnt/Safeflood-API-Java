@@ -2,6 +2,13 @@
 
 API REST para o sistema SafeFlood, uma plataforma de monitoramento e alerta de enchentes.
 
+## Integrantes
+
+- Kaue Vinicius Samartino da Silva - 559317
+- Davi Praxedes Santos Silva - 560719
+- João dos Santos Cardoso de Jesus - 560400
+
+
 ## Tecnologias Utilizadas
 
 - Java 21
@@ -25,7 +32,6 @@ O projeto segue uma arquitetura em camadas:
 ### Usuários (`/usuarios`)
 - `GET /usuarios`: Lista todos os usuários
 - `GET /usuarios/{id}`: Busca usuário por ID
-- `GET /usuarios/cpf/{cpf}`: Busca usuário por CPF
 - `GET /usuarios/email/{email}`: Busca usuário por email
 - `POST /usuarios`: Cria novo usuário
 - `PUT /usuarios/{id}`: Atualiza usuário
